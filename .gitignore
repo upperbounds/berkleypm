@@ -1,0 +1,9 @@
+syntax: glob
+.DS_Store
+*.class
+.idea         
+.idea_modules
+.history
+target
+repository
+repository.xml
