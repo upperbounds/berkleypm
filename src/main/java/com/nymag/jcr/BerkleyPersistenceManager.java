@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -115,6 +116,20 @@ public class BerkleyPersistenceManager extends AbstractBundlePersistenceManager 
     @Override
     protected void storeBundle(NodePropBundle bundle) throws ItemStateException {
         log.info("request to store bundle {}", bundle.getId());
+
+        ByteArrayOutputStream out = null;
+        try {
+            out = new ByteArrayOutputStream();
+            binding.writeBundle(out, bundle);
+            db.put(null, new DatabaseEntry(bundle.getId().getRawBytes()), new DatabaseEntry(out.toByteArray()));
+
+        } catch (IOException e) {
+            throw new ItemStateException(e.getMessage(), e);
+        }
+        finally {
+            IOUtils.closeQuietly(out);
+        }
+
     }
 
     @Override
